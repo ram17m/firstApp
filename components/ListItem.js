@@ -21,31 +21,44 @@ const ListItem = props => {
 const styles = StyleSheet.create({
   container: {
     marginTop: 5,
+    marginLeft: 10,
+    marginRight: 10,
     paddingTop: 10,
+    paddingBottom: 10,
     flex: 1,
     flexDirection: "row",
-    backgroundColor: "grey",
+    backgroundColor: "#35CE8D",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    borderWidth: 1.5,
+    elevation: 10
   },
   details: {
-    width: "45%",
+    width: "30%",
     flex: 1,
     flexDirection: "column",
-    padding: 10
+    padding: 5
   },
   image: {
-    width: "20%",
-    height: 200,
-    flex: 1,
+    width: 100,
+    height: 100,
     flexDirection: "row",
-    margin: 10
+    margin: 10,
+    borderRadius: 90
   },
   title: {
-    fontWeight: "bold"
+    flex: 1,
+    fontWeight: "bold",
+    color: "brown",
+    fontFamily: "monospace",
+    fontSize: 17,
+    paddingTop: 8
   },
   description: {
-    fontSize: 12
+    flex: 2,
+    fontSize: 14,
+    textAlign: "left",
+    paddingTop: 14
   }
 });
 
