@@ -9,7 +9,7 @@ const ListItem = props => {
       <View style={styles.container}>
         <Image
           style={styles.image}
-          source={{ uri: mediaURL + props.item.filename }}
+          source={{ uri: mediaURL + props.item.thumbnails.w160 }}
         />
         <View style={styles.details}>
           <Text style={styles.title}>{props.item.title}</Text>
