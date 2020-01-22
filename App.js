@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
-import List from "./components/List";
 import { MediaContext, MediaProvider } from "./contexts/MediaContext";
+import Home from "./views/Home.js";
+import AppContainer from "./navigators/Navigator.js";
 
 const App = () => {
   return (
     <MediaProvider>
-      <List />
+      <AppContainer />
     </MediaProvider>
   );
 };
