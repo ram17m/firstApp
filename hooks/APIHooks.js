@@ -8,11 +8,11 @@ const getAllMedia = () => {
 
   const fetchUrl = async () => {
     try {
-      const response = await fetch(apiUrl + "media");
+      const response = await fetch(apiUrl + "media/all");
       const json = await response.json();
       console.log("apihooks", json);
       const result = await Promise.all(
-        json.map(async item => {
+        json.files.map(async item => {
           const response = await fetch(apiUrl + "media/" + item.file_id);
           return await response.json();
         })
@@ -30,4 +30,39 @@ const getAllMedia = () => {
   return [data, loading];
 };
 
-export { getAllMedia };
+const login = async data => {
+  const fetchOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  };
+  try {
+    const response = await fetch(apiUrl + "login", fetchOptions);
+    const json = await response.json();
+    return json;
+  } catch (e) {
+    console.log("error", e.message);
+  }
+};
+
+const register = async data => {
+  const fetchOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  };
+  try {
+    const response = await fetch(apiUrl + "users", fetchOptions);
+    const json = await response.json();
+    console.log("registerResponse", json);
+    return json;
+  } catch (e) {
+    console.log("error", e.message);
+  }
+};
+
+export { getAllMedia, login, register };
