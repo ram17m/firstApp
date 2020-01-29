@@ -8,7 +8,6 @@ const FormTextInput = props => {
     <TextInput
       onChangeText={props.handler}
       value={props.value}
-      style={[styles.TextInput, style]}
       {...otherProps}
     />
   );

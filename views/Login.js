@@ -1,9 +1,20 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, Button, AsyncStorage } from "react-native";
+import { AsyncStorage } from "react-native";
 import PropTypes from "prop-types";
 import { login, register } from "../hooks/APIHooks.js";
 import FormTextInput from "../components/FormTextInupt.js";
 import useSignUpForm from "../hooks/LoginHooks";
+import {
+  List,
+  Text,
+  Button,
+  Title,
+  Container,
+  Form,
+  Header,
+  Item,
+  Content
+} from "native-base";
 
 const Login = props => {
   const [error, setError] = useState("");
@@ -48,66 +59,86 @@ const Login = props => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.form}>
-        <Text>Login</Text>
-        <View>
-          <FormTextInput
-            autoCapitalize="none"
-            placeholder="username"
-            handler={handleUsernameChange}
-          />
-          <FormTextInput
-            autoCapitalize="none"
-            placeholder="password"
-            secureTextEntry={true}
-            handler={handlePasswordChange}
-          />
+    <Container>
+      <Header />
+      <Content>
+        <Form>
+          <Title>
+            <Text style={{ fontWeight: "bold" }}>Login</Text>
+          </Title>
+          <Item>
+            <FormTextInput
+              autoCapitalize="none"
+              placeholder="username"
+              handler={handleUsernameChange}
+            />
+          </Item>
+          <Item last>
+            <FormTextInput
+              autoCapitalize="none"
+              placeholder="password"
+              secureTextEntry={true}
+              handler={handlePasswordChange}
+            />
+          </Item>
+
           <Button
-            title="Sign in"
+            full
             onPress={() => {
               signInAsync();
             }}
-          />
-        </View>
-      </View>
-      <View style={styles.form}>
-        <Text>Register</Text>
-        <View>
-          <FormTextInput
-            autoCapitalize="none"
-            placeholder="username"
-            onChangeText={handleUsernameChange}
-          />
-          <FormTextInput
-            autoCapitalize="none"
-            placeholder="email"
-            onChangeText={handleEmailChange}
-          />
-          <FormTextInput
-            autoCapitalize="none"
-            placeholder="fullname"
-            onChangeText={handleFullnameChange}
-          />
-          <FormTextInput
-            autoCapitalize="none"
-            placeholder="password"
-            onChangeText={handlePasswordChange}
-          />
+          >
+            <Text>Sign in!</Text>
+          </Button>
+        </Form>
+        <Form>
+          <Title>
+            <Text style={{ fontWeight: "bold" }}>Register</Text>
+          </Title>
+          <Item>
+            <FormTextInput
+              autoCapitalize="none"
+              placeholder="username"
+              onChangeText={handleUsernameChange}
+            />
+          </Item>
+          <Item>
+            <FormTextInput
+              autoCapitalize="none"
+              placeholder="email"
+              onChangeText={handleEmailChange}
+            />
+          </Item>
+          <Item>
+            <FormTextInput
+              autoCapitalize="none"
+              placeholder="fullname"
+              onChangeText={handleFullnameChange}
+            />
+          </Item>
+          <Item last>
+            <FormTextInput
+              autoCapitalize="none"
+              placeholder="password"
+              onChangeText={handlePasswordChange}
+            />
+          </Item>
           <Button
-            title="Sign in"
+            full
             onPress={() => {
-              registerAsync();
+              signInAsync();
             }}
-          />
-          <Text>{error}</Text>
-        </View>
-      </View>
-    </View>
+          >
+            <Text>Register!</Text>
+          </Button>
+        </Form>
+      </Content>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
+{
+  /* const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
@@ -118,7 +149,8 @@ const styles = StyleSheet.create({
   form: {
     padding: 20
   }
-});
+}); */
+}
 
 // proptypes here
 Login.propTypes = {

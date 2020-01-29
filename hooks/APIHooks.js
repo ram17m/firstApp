@@ -65,4 +65,14 @@ const register = async data => {
   }
 };
 
-export { getAllMedia, login, register };
+const getAvatar = async userId => {
+  try {
+    const response = await fetch(apiUrl + "tags/avatar_" + userId);
+    const json = await response.json();
+    return json;
+  } catch (e) {
+    console.log("error", e.message);
+  }
+};
+
+export { getAllMedia, login, register, getAvatar };

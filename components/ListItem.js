@@ -1,29 +1,37 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { Image } from "react-native";
+import {
+  Container,
+  Text,
+  Header,
+  Content,
+  Icon,
+  ListItem as BaseListItem,
+  Button,
+  Thumbnail
+} from "native-base";
 
 const mediaURL = "http://media.mw.metropolia.fi/wbma/uploads/";
 
 const ListItem = props => {
   const fileData = props.item;
+  console.log("listitem", fileData);
   return (
-    <TouchableOpacity
-      onPress={() => props.navigation.push("Single", { fileData: fileData })}
-    >
-      <View style={styles.container}>
-        <Image
-          style={styles.image}
-          source={{ uri: mediaURL + props.item.filename }}
-        />
-        <View style={styles.details}>
-          <Text style={styles.title}>{props.item.title}</Text>
-          <Text style={styles.description}>{props.item.description}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
+    <BaseListItem>
+      <Thumbnail source={{ uri: mediaURL + props.item.filename }} />
+
+      <Text>{props.item.title}</Text>
+      <Text>{props.item.description}</Text>
+      <Button
+        onPress={() => props.navigation.push("Single", { fileData: fileData })}
+      >
+        <Text>View</Text>
+      </Button>
+    </BaseListItem>
   );
 };
 
-const styles = StyleSheet.create({
+/* const styles = StyleSheet.create({
   container: {
     marginTop: 5,
     paddingTop: 10,
@@ -52,6 +60,6 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 11
   }
-});
+}); */
 
 export default ListItem;

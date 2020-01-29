@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, AsyncStorage, Button } from "react-native";
+import { getAvatar } from "../hooks/APIHooks.js";
+import { StyleSheet, Image, AsyncStorage } from "react-native";
+import {
+  Container,
+  Text,
+  Content,
+  Header,
+  Card,
+  CardItem,
+  Left,
+  Icon,
+  Body,
+  Button
+} from "native-base";
+
+const mediaURL = "http://media.mw.metropolia.fi/wbma/uploads/";
 
 const Profile = props => {
   const [user, setUser] = useState({});
@@ -12,6 +27,10 @@ const Profile = props => {
     console.log("userJSON", userJSON);
     const user = JSON.parse(userJSON);
     console.log("user", user);
+    const tagObject = await getAvatar(user.user_id);
+    console.log(tagObject);
+    user.avatarFilename = tagObject[0].filename;
+    console.log("newUser", user);
     setUser(() => {
       return user;
     });
@@ -20,12 +39,49 @@ const Profile = props => {
     getUser();
   }, []);
   return (
-    <View style={styles.container}>
-      <Text>username: {user.username}</Text>
-      <Text>Full Name: {user.full_name}</Text>
-      <Text>Email: {user.email}</Text>
-      <Button title="Logout!" onPress={signOutAsync} />
-    </View>
+    <Container>
+      <Content>
+        <Card>
+          <CardItem>
+            <Left>
+              <Icon name="person" />
+              <Text>Username: {user.username}</Text>
+            </Left>
+          </CardItem>
+          <CardItem style={{ margin: 20 }} cardBody>
+            <Image
+              style={{ height: 300, width: null, flex: 1 }}
+              source={{ uri: mediaURL + user.avatarFilename }}
+            />
+          </CardItem>
+          <CardItem>
+            <Body>
+              <Text>Fullname: {user.full_name}</Text>
+              <Text>Email: {user.email}</Text>
+            </Body>
+          </CardItem>
+          <Button
+            full
+            style={{ margin: 10 }}
+            onPress={() => {
+              signOutAsync();
+            }}
+          >
+            <Text>Logout</Text>
+          </Button>
+        </Card>
+      </Content>
+    </Container>
+
+    //   <View style={styles.container}>
+    //     <Text>username: {user.username}</Text>
+    //     <Text>Full Name: {user.full_name}</Text>
+    //     <Text>Email: {user.email}</Text>
+    //     <Button
+    //       title='Logout!'
+    //       onPress={signOutAsync}
+    //     />
+    //   </View>
   );
 };
 
