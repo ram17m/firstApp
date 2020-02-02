@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, FlatList } from "react-native";
+
 import ListItem from "./ListItem";
 import { MediaContext } from "../contexts/MediaContext";
 import { getAllMedia } from "../hooks/APIHooks.js";

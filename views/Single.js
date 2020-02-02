@@ -19,6 +19,7 @@ const Single = props => {
   );
   return (
     <Container>
+      <Header />
       <Content>
         <Card>
           <CardItem style={{ margin: 20 }} cardBody>

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { getAvatar } from "../hooks/APIHooks.js";
-import { StyleSheet, Image, AsyncStorage } from "react-native";
+import React from "react";
+import { Image } from "react-native";
 import {
   Container,
   Text,
@@ -10,89 +9,38 @@ import {
   CardItem,
   Left,
   Icon,
-  Body,
-  Button
+  Body
 } from "native-base";
-
 const mediaURL = "http://media.mw.metropolia.fi/wbma/uploads/";
 
-const Profile = props => {
-  const [user, setUser] = useState({});
-  const signOutAsync = async () => {
-    await AsyncStorage.clear();
-    props.navigation.navigate("Auth");
-  };
-  const getUser = async () => {
-    const userJSON = await AsyncStorage.getItem("user");
-    console.log("userJSON", userJSON);
-    const user = JSON.parse(userJSON);
-    console.log("user", user);
-    const tagObject = await getAvatar(user.user_id);
-    console.log(tagObject);
-    user.avatarFilename = tagObject[0].filename;
-    console.log("newUser", user);
-    setUser(() => {
-      return user;
-    });
-  };
-  useEffect(() => {
-    getUser();
-  }, []);
+const Single = props => {
+  const { title, filename, description } = props.navigation.getParam(
+    "fileData"
+  );
   return (
     <Container>
+      <Header />
       <Content>
         <Card>
-          <CardItem>
-            <Left>
-              <Icon name="person" />
-              <Text>Username: {user.username}</Text>
-            </Left>
-          </CardItem>
           <CardItem style={{ margin: 20 }} cardBody>
             <Image
               style={{ height: 300, width: null, flex: 1 }}
-              source={{ uri: mediaURL + user.avatarFilename }}
+              source={{ uri: mediaURL + filename }}
             />
           </CardItem>
           <CardItem>
-            <Body>
-              <Text>Fullname: {user.full_name}</Text>
-              <Text>Email: {user.email}</Text>
-            </Body>
+            <Left>
+              <Icon name="image" />
+              <Body>
+                <Text>{title}</Text>
+                <Text>{description}</Text>
+              </Body>
+            </Left>
           </CardItem>
-          <Button
-            full
-            style={{ margin: 10 }}
-            onPress={() => {
-              signOutAsync();
-            }}
-          >
-            <Text>Logout</Text>
-          </Button>
         </Card>
       </Content>
     </Container>
-
-    //   <View style={styles.container}>
-    //     <Text>username: {user.username}</Text>
-    //     <Text>Full Name: {user.full_name}</Text>
-    //     <Text>Email: {user.email}</Text>
-    //     <Button
-    //       title='Logout!'
-    //       onPress={signOutAsync}
-    //     />
-    //   </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 40
-  }
-});
-
-export default Profile;
+export default Single;

@@ -75,4 +75,15 @@ const getAvatar = async userId => {
   }
 };
 
-export { getAllMedia, login, register, getAvatar };
+const usernameAvailable = async username => {
+  try {
+    const response = await fetch(apiUrl + "users/username/" + username);
+    const json = await response.json();
+    console.log(json.available);
+    return json.available;
+  } catch (e) {
+    console.log("error", e.message);
+  }
+};
+
+export { getAllMedia, login, register, getAvatar, usernameAvailable };

@@ -1,30 +1,37 @@
 import React, { useState } from "react";
 import { AsyncStorage } from "react-native";
-import PropTypes from "prop-types";
-import { login, register } from "../hooks/APIHooks.js";
-import FormTextInput from "../components/FormTextInupt.js";
-import useSignUpForm from "../hooks/LoginHooks";
 import {
-  List,
-  Text,
-  Button,
-  Title,
   Container,
-  Form,
   Header,
+  Content,
+  Form,
   Item,
-  Content
+  Input,
+  Button,
+  Text,
+  Title,
+  Badge
 } from "native-base";
+import PropTypes from "prop-types";
+import { login, register, usernameAvailable } from "../hooks/APIHooks.js";
+import useSignUpForm from "../hooks/LoginHooks";
+import FormTextInput from "../components/FormTextInupt.js";
 
 const Login = props => {
   const [error, setError] = useState("");
-  //props is needed for navigation
+  const [toggleForm, setToggleForm] = useState(true);
+  // props is needed for navigation
   const {
     handleUsernameChange,
     handlePasswordChange,
     handleEmailChange,
     handleFullnameChange,
-    inputs
+    handleConfirmPasswordChange,
+    validateField,
+    validatePassword,
+    inputs,
+    errors,
+    setErrors
   } = useSignUpForm();
   const signInAsync = async () => {
     try {
@@ -41,18 +48,48 @@ const Login = props => {
     }
   };
   const registerAsync = async () => {
-    try {
-      const result = await register({
-        username: inputs.username,
-        password: inputs.password,
-        email: inputs.email,
-        full_name: inputs.fullname
-      });
-      console.log(result);
-      if (result.error) {
-        setError(result.error);
+    const usernameOK = validateField("username", inputs.username);
+    const emailOK = validateField("email", inputs.email);
+    const passwordOK = validateField("password", inputs.password);
+    const passwordMatch = validatePassword(
+      "password",
+      inputs.password,
+      "confirmPassword",
+      inputs.confirmPassword
+    );
+    const usernameFree = await usernameAvailable(inputs.username);
+    console.log("errorsFromRegisterAsync", errors);
+    console.log("userNameAvailable", usernameFree);
+    console.log("usernameOK", usernameOK);
+    console.log("emailOK", emailOK);
+    console.log("passwordOK", passwordOK);
+    console.log("passwordMatch", passwordMatch);
+    if (usernameOK && emailOK && passwordOK && passwordMatch && usernameFree) {
+      try {
+        const result = await register({
+          username: inputs.username,
+          password: inputs.password,
+          email: inputs.email,
+          full_name: inputs.fullname
+        });
+        console.log(result);
+        if (result.error) {
+          setError(result.error);
+        }
+        signInAsync();
+      } catch (e) {
+        console.log(e.message);
       }
-      signInAsync();
+    } else {
+      console.log("reg btn not working");
+    }
+  };
+
+  const checkUserNameAsync = async username => {
+    try {
+      const usernamePresent = await usernameAvailable(username);
+      console.log("usernamePresent", usernamePresent);
+      setError(!usernamePresent ? "username already exists" : "");
     } catch (e) {
       console.log(e.message);
     }
@@ -60,97 +97,161 @@ const Login = props => {
 
   return (
     <Container>
-      <Header />
-      <Content>
-        <Form>
-          <Title>
-            <Text style={{ fontWeight: "bold" }}>Login</Text>
-          </Title>
-          <Item>
-            <FormTextInput
-              autoCapitalize="none"
-              placeholder="username"
-              handler={handleUsernameChange}
-            />
-          </Item>
-          <Item last>
-            <FormTextInput
-              autoCapitalize="none"
-              placeholder="password"
-              secureTextEntry={true}
-              handler={handlePasswordChange}
-            />
-          </Item>
-
-          <Button
-            full
-            onPress={() => {
-              signInAsync();
-            }}
-          >
-            <Text>Sign in!</Text>
-          </Button>
-        </Form>
-        <Form>
-          <Title>
-            <Text style={{ fontWeight: "bold" }}>Register</Text>
-          </Title>
-          <Item>
-            <FormTextInput
-              autoCapitalize="none"
-              placeholder="username"
-              onChangeText={handleUsernameChange}
-            />
-          </Item>
-          <Item>
-            <FormTextInput
-              autoCapitalize="none"
-              placeholder="email"
-              onChangeText={handleEmailChange}
-            />
-          </Item>
-          <Item>
-            <FormTextInput
-              autoCapitalize="none"
-              placeholder="fullname"
-              onChangeText={handleFullnameChange}
-            />
-          </Item>
-          <Item last>
-            <FormTextInput
-              autoCapitalize="none"
-              placeholder="password"
-              onChangeText={handlePasswordChange}
-            />
-          </Item>
-          <Button
-            full
-            onPress={() => {
-              signInAsync();
-            }}
-          >
-            <Text>Register!</Text>
-          </Button>
-        </Form>
-      </Content>
+      {toggleForm ? (
+        <Container>
+          <Header />
+          <Content>
+            <Form>
+              <Title>
+                <Text style={{ fontWeight: "bold" }}>Login</Text>
+              </Title>
+              <Item error>
+                <Input
+                  placeholder="username"
+                  autoCapitalize="none"
+                  onChangeText={handleUsernameChange}
+                />
+              </Item>
+              <Item last>
+                <Input
+                  placeholder="password"
+                  autoCapitalize="none"
+                  secureTextEntry={true}
+                  onChangeText={handlePasswordChange}
+                />
+              </Item>
+              <Button
+                full
+                style={{ margin: 10 }}
+                onPress={() => {
+                  signInAsync();
+                }}
+              >
+                <Text>Sign in!</Text>
+              </Button>
+              <Button
+                style={{ margin: 10 }}
+                dark
+                full
+                onPress={() => {
+                  setToggleForm(false);
+                }}
+              >
+                <Text>or Register</Text>
+              </Button>
+            </Form>
+          </Content>
+        </Container>
+      ) : (
+        <Container>
+          <Header />
+          <Content>
+            <Form>
+              <Title>
+                <Text style={{ fontWeight: "bold" }}>Register</Text>
+              </Title>
+              <Item>
+                <FormTextInput
+                  autoCapitalize="none"
+                  value={inputs.username}
+                  placeholder="username"
+                  onChangeText={handleUsernameChange}
+                  onEndEditing={async evt => {
+                    console.log("errorString", error);
+                    const usernameFree = await usernameAvailable(
+                      inputs.username
+                    );
+                    if (usernameFree) {
+                      setErrors(errors => ({
+                        ...errors,
+                        usernameFree: undefined
+                      }));
+                    } else {
+                      setErrors(errors => ({
+                        ...errors,
+                        usernameFree: "username not available"
+                      }));
+                    }
+                    checkUserNameAsync(evt);
+                    validateField("username", inputs.username);
+                  }}
+                  error={errors.username}
+                />
+              </Item>
+              <Item>
+                <FormTextInput
+                  placeholder="email"
+                  autoCapitalize="none"
+                  onChangeText={handleEmailChange}
+                  onEndEditing={evt => {
+                    validateField("email", inputs.email);
+                  }}
+                  error={errors.email}
+                />
+              </Item>
+              <Item>
+                <Input
+                  placeholder="fullname"
+                  autoCapitalize="none"
+                  onChangeText={handleFullnameChange}
+                />
+              </Item>
+              <Item>
+                <FormTextInput
+                  placeholder="password"
+                  autoCapitalize="none"
+                  secureTextEntry={true}
+                  onChangeText={handlePasswordChange}
+                  onEndEditing={evt => {
+                    validateField("password", inputs.password);
+                    validatePassword(
+                      "password",
+                      inputs.password,
+                      "confirmPassword",
+                      inputs.confirmPassword
+                    );
+                  }}
+                  error={errors.password}
+                />
+              </Item>
+              <Item>
+                <FormTextInput
+                  placeholder="confirm password"
+                  autoCapitalize="none"
+                  secureTextEntry={true}
+                  onChangeText={handleConfirmPasswordChange}
+                  onEndEditing={evt => {
+                    // do something
+                    validatePassword(
+                      "password",
+                      inputs.password,
+                      "confirmPassword",
+                      inputs.confirmPassword
+                    );
+                  }}
+                  error={errors.confirmPassword}
+                />
+              </Item>
+              <Button
+                full
+                onPress={() => {
+                  registerAsync();
+                }}
+              >
+                <Text>Register!</Text>
+              </Button>
+              {errors.usernameFree && (
+                <Badge style={{ width: "100%" }}>
+                  <Text>username already exists!</Text>
+                </Badge>
+              )}
+            </Form>
+          </Content>
+        </Container>
+      )}
     </Container>
   );
 };
-
-{
-  /* const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 40
-  },
-  form: {
-    padding: 20
-  }
-}); */
-}
 
 // proptypes here
 Login.propTypes = {
