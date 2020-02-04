@@ -13,7 +13,6 @@ const List = props => {
   return (
     <BaseList
       dataArray={media}
-      keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) => {
         return (
           <ListItem
@@ -23,6 +22,7 @@ const List = props => {
           />
         );
       }}
+      keyExtractor={(item, index) => index.toString()}
     />
   );
 };
