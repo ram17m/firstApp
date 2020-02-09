@@ -2,17 +2,19 @@ import React from "react";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { createStackNavigator } from "react-navigation-stack";
-import Home from "../views/Home.js";
-import Profile from "../views/Profile.js";
-import Single from "../views/Single.js";
-import AuthLoading from "../views/AuthLoading.js";
-import Login from "../views/Login.js";
+import Home from "../views/Home";
+import Profile from "../views/Profile";
+import Single from "../views/Single";
+import AuthLoading from "../views/AuthLoading";
+import Login from "../views/Login";
+import Upload from "../views/Upload";
 import { Icon } from "native-base";
 
 const TabNavigator = createBottomTabNavigator(
   {
     Home,
-    Profile
+    Profile,
+    Upload
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -23,26 +25,48 @@ const TabNavigator = createBottomTabNavigator(
           iconName = "home";
         } else if (routeName === "Profile") {
           iconName = "person";
+        } else if (routeName === "Upload") {
+          iconName = "add";
         }
 
         // You can return any component that you like here!
         return <Icon name={iconName} size={25} />;
       }
-    })
+    }),
+    tabBarOptions: {
+      activeTintColor: "#000"
+    }
   }
 );
 
-const StackNavigator = createStackNavigator({
-  Home: {
-    screen: TabNavigator,
-    navigationOptions: {
-      headerMode: "none"
+TabNavigator.navigationOptions = ({ navigation }) => {
+  const { routeName } = navigation.state.routes[navigation.state.index];
+
+  // You can do whatever you like here to pick the title based on the route name
+  const headerTitle = routeName;
+
+  return {
+    headerTitle
+  };
+};
+
+const StackNavigator = createStackNavigator(
+  // RouteConfigs
+  {
+    Home: {
+      screen: TabNavigator,
+      navigationOptions: {
+        headerMode: "none" // this will hide the header
+      }
+    },
+    Single: {
+      screen: Single
+    },
+    Logout: {
+      screen: Login
     }
-  },
-  Single: {
-    screen: Single
   }
-});
+);
 
 const Navigator = createSwitchNavigator(
   {
@@ -55,6 +79,4 @@ const Navigator = createSwitchNavigator(
   }
 );
 
-const AppContainer = createAppContainer(Navigator);
-
-export default AppContainer;
+export default createAppContainer(Navigator);
