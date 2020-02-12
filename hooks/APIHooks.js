@@ -86,4 +86,15 @@ const usernameAvailable = async username => {
   }
 };
 
-export { getAllMedia, login, register, getAvatar, usernameAvailable };
+const getUser = async id => {
+  try {
+    const token = await AsyncStorage.getItem("userToken");
+    // console.log('getuser token', token);
+    // console.log('getuser id', id);
+    return await fetchGET("users", id, token);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
+export { getUser, getAllMedia, login, register, getAvatar, usernameAvailable };
