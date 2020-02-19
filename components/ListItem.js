@@ -7,22 +7,27 @@ import {
   Body,
   Text,
   Right,
-  Button
+  Button,
+  Icon
 } from "native-base";
+import PropTypes from "prop-types";
+import { deleteFile } from "../hooks/APIHooks";
 
 const mediaURL = "http://media.mw.metropolia.fi/wbma/uploads/";
 
 const ListItem = props => {
-  const fileData = props.item;
   return (
     <Card>
       <CardItem>
         <Left>
-          <Thumbnail square source={{ uri: mediaURL + props.item.filename }} />
+          <Thumbnail
+            square
+            source={{ uri: mediaURL + props.singleMedia.thumbnails.w160 }}
+          />
           <Body>
-            <Text numberOfLines={1}>{props.item.title}</Text>
+            <Text numberOfLines={1}>{props.singleMedia.title}</Text>
             <Text note numberOfLines={1}>
-              {props.item.description}
+              {props.singleMedia.description}
             </Text>
           </Body>
         </Left>
@@ -30,15 +35,47 @@ const ListItem = props => {
           <Button
             primary
             onPress={() =>
-              props.navigation.push("Single", { fileData: fileData })
+              props.navigation.push("Single", { fileData: props.singleMedia })
             }
           >
-            <Text>View</Text>
+            <Icon name="eye" />
           </Button>
+          {props.mode === "myFiles" && (
+            <>
+              <Button
+                warning
+                onPress={() =>
+                  props.navigation.push("Modify", {
+                    fileData: props.singleMedia
+                  })
+                }
+              >
+                <Icon name="create" />
+              </Button>
+              <Button
+                danger
+                onPress={async () => {
+                  const del = await deleteFile(props.singleMedia.file_id);
+                  if (del.message) {
+                    props.getMedia();
+                  }
+                }}
+              >
+                <Icon name="trash" />
+              </Button>
+            </>
+          )}
         </Right>
       </CardItem>
     </Card>
   );
+};
+
+ListItem.propTypes = {
+  singleMedia: PropTypes.object,
+  navigation: PropTypes.object,
+  mode: PropTypes.string,
+  getMedia: PropTypes.func
 };
 
 export default ListItem;

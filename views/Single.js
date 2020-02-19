@@ -1,59 +1,57 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Image, Dimensions } from "react-native";
 import {
   Container,
+  Text,
   Content,
+  Header,
   Card,
   CardItem,
   Left,
-  Body,
-  H3,
   Icon,
-  Text
+  Body
 } from "native-base";
-import PropTypes from "prop-types";
-
-import { Image, Dimensions } from "react-native";
-
-import { getUser } from "../hooks/APIHooks";
 import { Video } from "expo-av";
-
+import { getUser } from "../hooks/APIHooks";
 const mediaURL = "http://media.mw.metropolia.fi/wbma/uploads/";
 const deviceHeight = Dimensions.get("window").height;
-
 console.log("dh", deviceHeight);
 
 const Single = props => {
-  const { navigation } = props;
+  console.log("fileData", props.navigation.getParam("fileData"));
+  const {
+    title,
+    filename,
+    description,
+    media_type,
+    user_id
+  } = props.navigation.getParam("fileData");
+  console.log("media_type", media_type);
   const [owner, setOwner] = useState({});
-  // console.log('Singel navi', navigation.state);
-  const file = navigation.state.params.fileData;
 
   const getOwner = async () => {
-    const data = await getUser(file.user_id);
+    const data = await getUser(user_id);
     setOwner(data);
-    // console.log('file owner', owner);
+    console.log("userData", data);
   };
+
   useEffect(() => {
     getOwner();
   }, []);
-
   return (
     <Container>
       <Content>
         <Card>
-          <CardItem>
-            {file.media_type === "image" && (
+          <CardItem style={{ margin: 20 }} cardBody>
+            {media_type === "image" && (
               <Image
-                style={{
-                  width: "100%",
-                  height: deviceHeight / 2
-                }}
-                source={{ uri: mediaURL + file.filename }}
+                style={{ height: 300, width: null, flex: 1 }}
+                source={{ uri: mediaURL + filename }}
               />
             )}
-            {file.media_type === "video" && (
+            {media_type === "video" && (
               <Video
-                source={{ uri: mediaURL + file.filename }}
+                source={{ uri: mediaURL + filename }}
                 rate={1.0}
                 volume={1.0}
                 isMuted={false}
@@ -69,8 +67,8 @@ const Single = props => {
             <Left>
               <Icon name="image" />
               <Body>
-                <H3>{file.title}</H3>
-                <Text>{file.description}</Text>
+                <Text>{title}</Text>
+                <Text>{description}</Text>
               </Body>
             </Left>
           </CardItem>
@@ -89,11 +87,6 @@ const Single = props => {
       </Content>
     </Container>
   );
-};
-
-Single.propTypes = {
-  navigation: PropTypes.object,
-  file: PropTypes.object
 };
 
 export default Single;

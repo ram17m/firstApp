@@ -1,33 +1,50 @@
-import { useState, useEffect } from "react";
+import { AsyncStorage } from "react-native";
 
 const apiUrl = "http://media.mw.metropolia.fi/wbma/";
 
-const getAllMedia = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+const getAllMedia = async () => {
+  console.log("getAllMedia");
+  try {
+    const response = await fetch(apiUrl + "media/all");
+    const json = await response.json();
+    const filesArray = json.files;
+    filesArray.splice(5);
+    // console.log(filesArray);
+    // console.log('jsonResponseFromMediaAll', json);
+    const result = await Promise.all(
+      filesArray.map(async fileObject => {
+        const response = await fetch(apiUrl + "media/" + fileObject.file_id);
+        return await response.json();
+      })
+    );
+    // console.log('resultAfterMapping', result);
+    return result;
+  } catch (e) {
+    console.log("error msg from getAllMedia", e.message);
+  }
+};
 
-  const fetchUrl = async () => {
-    try {
-      const response = await fetch(apiUrl + "media/all");
-      const json = await response.json();
-      console.log("apihooks", json);
-      const result = await Promise.all(
-        json.files.map(async item => {
-          const response = await fetch(apiUrl + "media/" + item.file_id);
-          return await response.json();
-        })
-      );
-      setData(result);
-      setLoading(false);
-    } catch (e) {
-      console.log("error", e.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchUrl();
-  }, []);
-  return [data, loading];
+const getUserMedia = async token => {
+  try {
+    const fetchOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    };
+    const response = await fetch(apiUrl + "media/user/", fetchOptions);
+    const filesArray = await response.json();
+    const result = await Promise.all(
+      filesArray.map(async fileObject => {
+        const response = await fetch(apiUrl + "media/" + fileObject.file_id);
+        return await response.json();
+      })
+    );
+    return result;
+  } catch (e) {
+    console.log("error msg from getUserMedia", e.message);
+  }
 };
 
 const login = async data => {
@@ -86,15 +103,68 @@ const usernameAvailable = async username => {
   }
 };
 
-const getUser = async id => {
+const getUser = async userId => {
   try {
     const token = await AsyncStorage.getItem("userToken");
-    // console.log('getuser token', token);
-    // console.log('getuser id', id);
-    return await fetchGET("users", id, token);
+    const fetchOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    };
+    const response = await fetch(apiUrl + "users/" + userId, fetchOptions);
+    const json = await response.json();
+    return json;
   } catch (e) {
-    console.log(e.message);
+    console.log("error", e.message);
   }
 };
 
-export { getUser, getAllMedia, login, register, getAvatar, usernameAvailable };
+const getUserFiles = async userId => {
+  try {
+    const token = await AsyncStorage.getItem("userToken");
+    const fetchOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    };
+    const response = await fetch(apiUrl + "media/user/" + userId, fetchOptions);
+    const json = await response.json();
+    return json;
+  } catch (e) {
+    console.log("error", e.message);
+  }
+};
+
+const deleteFile = async fileId => {
+  try {
+    const token = await AsyncStorage.getItem("userToken");
+    const fetchOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    };
+    const response = await fetch(apiUrl + "media/" + fileId, fetchOptions);
+    const json = await response.json();
+    return json;
+  } catch (e) {
+    console.log("err msg from deleteFile", e.message);
+  }
+};
+
+export {
+  getAllMedia,
+  login,
+  register,
+  getAvatar,
+  usernameAvailable,
+  getUser,
+  getUserFiles,
+  getUserMedia,
+  deleteFile
+};

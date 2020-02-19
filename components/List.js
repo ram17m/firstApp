@@ -1,43 +1,64 @@
-import React, { useContext } from "react";
-
+import React, { useContext, useState, useEffect } from "react";
+import { List as BaseList, View, Spinner } from "native-base";
 import ListItem from "./ListItem";
 import { MediaContext } from "../contexts/MediaContext";
-import { getAllMedia } from "../hooks/APIHooks.js";
-import { List as BaseList } from "native-base";
+import { getAllMedia, getUserMedia } from "../hooks/APIHooks.js";
+import { NavigationEvents } from "react-navigation";
+import PropTypes from "prop-types";
+import { AsyncStorage } from "react-native";
 
 const List = props => {
-  const [media, setMedia] = useContext(MediaContext);
-  const [data, loading] = getAllMedia();
-  setMedia(data);
-  // console.log("rendering a list of data:", data);
+  const { media, setMedia, myMedia, setMyMedia } = useContext(MediaContext);
+  const [loading, setLoading] = useState(true);
+
+  const getMedia = async mode => {
+    try {
+      let data = [];
+      if (mode === "all") {
+        data = await getAllMedia();
+        setMedia(data.reverse());
+      } else {
+        const token = await AsyncStorage.getItem("userToken");
+        data = await getUserMedia(token);
+        setMyMedia(data.reverse());
+      }
+      setLoading(false);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+  useEffect(() => {
+    getMedia(props.mode);
+  }, []);
+
   return (
-    <BaseList
-      dataArray={media}
-      renderItem={({ item }) => {
-        return (
-          <ListItem
-            item={item}
-            navigation={props.navigation}
-            singleMedia={item}
-          />
-        );
-      }}
-      keyExtractor={(item, index) => index.toString()}
-    />
+    <View>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <BaseList
+          dataArray={props.mode === "all" ? media : myMedia}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => {
+            return (
+              <ListItem
+                navigation={props.navigation}
+                singleMedia={item}
+                mode={props.mode}
+                getMedia={getMedia}
+              />
+            );
+          }}
+        />
+      )}
+    </View>
   );
 };
 
-export default List;
+List.propTypes = {
+  navigation: PropTypes.object,
+  mode: PropTypes.string
+};
 
-// <TouchableOpacity>
-//   <View style={styles.container}>
-//     <Image
-//       style={styles.image}
-//       source={{uri: item.thumbnails.w160}}
-//     />
-//     <View style={styles.details}>
-//       <Text style={styles.title}>{item.title}</Text>
-//       <Text style={styles.description}>{item.description}</Text>
-//     </View>
-//   </View>
-// </TouchableOpacity>
+export default List;

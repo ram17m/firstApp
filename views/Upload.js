@@ -1,101 +1,104 @@
 import React, { useState, useEffect } from "react";
-import { Content, Form, Button, Text, Item, Input } from "native-base";
-import { AsyncStorage, Dimensions, Image } from "react-native";
-import PropTypes from "prop-types";
-import { fetchGET, fetchPOST } from "../hooks/APIHooks";
-
+import { Image } from "react-native";
+import { Container, Content, Text, Form, Item, Button } from "native-base";
 import * as ImagePicker from "expo-image-picker";
-import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
-import useUploadForm from "../hooks/UploadHooks";
 import FormTextInput from "../components/FormTextInupt";
-
-const deviceHeight = Dimensions.get("window").height;
+import useUploadForm from "../hooks/UploadHooks";
 
 const Upload = props => {
-  const [image, setImage] = useState(null);
-
   const {
-    handleTitleChange,
-    handleDescriptionChange,
+    handleUploadTitleChange,
+    handleUploadDescriptionChange,
+    handleUploadImageUri,
     handleUpload,
-    inputs
+    validateField,
+    reset,
+    inputs,
+    errors
   } = useUploadForm();
 
-  const getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
+  useEffect(() => {
+    console.log("hi");
+  }, []);
+
+  const uploadAsync = async () => {
+    const titleOK = validateField("title", inputs.title);
+    const descriptionOK = validateField("description", inputs.description);
+    console.log("image", inputs.image);
+    if (titleOK && descriptionOK && inputs.image) {
+      try {
+        handleUpload(props.navigation);
+      } catch (e) {
+        console.log(e.message);
       }
+    } else {
+      console.log("upload btn is not working!!");
     }
   };
 
-  useEffect(() => {
-    getPermissionAsync();
-  }, []);
-
-  const pickImage = async () => {
+  const _pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.3,
-      exif: true
+      quality: 1
     });
 
     console.log(result);
 
     if (!result.cancelled) {
-      setImage(result);
+      handleUploadImageUri(result.uri);
     }
   };
 
   return (
-    <Content>
-      <Form>
-        <Item>
-          <Input
-            placeholder="Title"
-            onChangeText={handleTitleChange}
-            value={inputs.title}
-          />
-        </Item>
-        <Item>
-          <Input
-            placeholder="Description"
-            onChangeText={handleDescriptionChange}
-            value={inputs.description}
-          />
-        </Item>
-        {image && (
-          <Image
-            source={{ uri: image.uri }}
-            style={{ width: "100%", height: deviceHeight / 3 }}
-          />
-        )}
-        <Button full onPress={pickImage}>
-          <Text>Select file</Text>
-        </Button>
-        <Button dark full>
-          <Text>Reset form</Text>
-        </Button>
-        <Button
-          full
-          onPress={() => {
-            handleUpload(image, props.navigation);
-          }}
-        >
-          <Text>Upload</Text>
-        </Button>
-      </Form>
-    </Content>
+    <Container>
+      <Content>
+        <Form>
+          <Text style={{ textAlign: "center", fontWeight: "bold" }}>
+            Upload
+          </Text>
+          <Item>
+            <FormTextInput
+              value={inputs.title}
+              placeholder="title"
+              onChangeText={handleUploadTitleChange}
+              onEndEditing={() => {
+                validateField("title", inputs.title);
+              }}
+              error={errors.title}
+            />
+          </Item>
+          <Item>
+            <FormTextInput
+              value={inputs.description}
+              placeholder="description"
+              onChangeText={handleUploadDescriptionChange}
+              onEndEditing={() => {
+                validateField("description", inputs.description);
+              }}
+              error={errors.description}
+            />
+          </Item>
+          <Button full style={{ margin: 10 }} onPress={_pickImage}>
+            <Text>Select</Text>
+          </Button>
+          <Button full style={{ margin: 10 }} onPress={reset}>
+            <Text>Reset</Text>
+          </Button>
+          <Button full style={{ margin: 10 }} onPress={uploadAsync}>
+            <Text>Upload</Text>
+          </Button>
+          {!!inputs.image && (
+            <Image
+              style={{ height: 300, width: null, flex: 1 }}
+              source={{ uri: inputs.image }}
+            />
+          )}
+        </Form>
+      </Content>
+    </Container>
   );
-};
-
-// proptypes here
-Upload.propTypes = {
-  navigation: PropTypes.object
 };
 
 export default Upload;

@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
-import { ActivityIndicator, AsyncStorage, StatusBar, View } from "react-native";
+import {
+  ActivityIndicator,
+  AsyncStorage,
+  StatusBar,
+  View,
+  Text
+} from "react-native";
 import propTypes from "prop-types";
 
 const bootstrapAsync = async props => {

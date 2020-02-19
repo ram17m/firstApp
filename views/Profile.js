@@ -68,6 +68,16 @@ const Profile = props => {
             full
             style={{ margin: 10 }}
             onPress={() => {
+              console.log("myFiles btn pressed");
+              props.navigation.navigate("MyFiles");
+            }}
+          >
+            <Text>My Files</Text>
+          </Button>
+          <Button
+            full
+            style={{ margin: 10 }}
+            onPress={() => {
               signOutAsync();
             }}
           >
