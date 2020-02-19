@@ -12,7 +12,7 @@ import {
 } from "native-base";
 import PropTypes from "prop-types";
 
-import { Dimensions } from "react-native";
+import { Image, Dimensions } from "react-native";
 
 import { getUser } from "../hooks/APIHooks";
 import { Video } from "expo-av";
