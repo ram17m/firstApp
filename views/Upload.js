@@ -24,10 +24,9 @@ const Upload = props => {
 
   const uploadAsync = async () => {
     const titleOK = validateField("title", inputs.title);
-    const descriptionOK = validateField("description", inputs.description);
 
     console.log("image", inputs.image);
-    if (titleOK && descriptionOK && inputs.image) {
+    if (titleOK && inputs.image) {
       try {
         handleUpload(props.navigation);
       } catch (e) {
@@ -79,10 +78,6 @@ const Upload = props => {
               value={inputs.postText}
               placeholder="description"
               onChangeText={handleUploadDescriptionChange}
-              onEndEditing={() => {
-                validateField("description", inputs.description);
-              }}
-              error={errors.description}
             />
           </Item>
           {/*  <Item>

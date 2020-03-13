@@ -13,15 +13,6 @@ const constraints = {
       minimum: 3,
       message: "Field must be atleast three characters"
     }
-  },
-  description: {
-    presence: {
-      message: "This field is required"
-    },
-    length: {
-      minimum: 5,
-      message: "Field must be atleast five characters"
-    }
   }
 };
 

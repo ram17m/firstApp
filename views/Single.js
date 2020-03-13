@@ -18,7 +18,7 @@ import {
 } from "native-base";
 import { Video } from "expo-av";
 import { getUser } from "../hooks/APIHooks";
-import useCommentForm from "../components/post.js";
+import useCommentForm from "../components/comment.js";
 const mediaURL = "http://media.mw.metropolia.fi/wbma/uploads/";
 const deviceHeight = Dimensions.get("window").height;
 console.log("dh", deviceHeight);
