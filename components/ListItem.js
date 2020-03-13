@@ -25,10 +25,12 @@ const ListItem = props => {
             source={{ uri: mediaURL + props.singleMedia.thumbnails.w160 }}
           />
           <Body>
-            <Text numberOfLines={1}>{props.singleMedia.title}</Text>
+            <Text numberOfLines={1}>Title:{props.singleMedia.title}</Text>
             <Text note numberOfLines={1}>
-              {props.singleMedia.description}
+              {props.singleMedia.description.FoodType}
             </Text>
+            <Text numberOfLines={1}>Comment:{props.singleMedia.tag}</Text>
+            <Text numberOfLines={1}>Rating:{props.singleMedia.rating}</Text>
           </Body>
         </Left>
         <Right>

@@ -9,6 +9,7 @@ const Upload = props => {
   const {
     handleUploadTitleChange,
     handleUploadDescriptionChange,
+    handleFoodTypeChange,
     handleUploadImageUri,
     handleUpload,
     validateField,
@@ -24,6 +25,7 @@ const Upload = props => {
   const uploadAsync = async () => {
     const titleOK = validateField("title", inputs.title);
     const descriptionOK = validateField("description", inputs.description);
+
     console.log("image", inputs.image);
     if (titleOK && descriptionOK && inputs.image) {
       try {
@@ -50,6 +52,9 @@ const Upload = props => {
       handleUploadImageUri(result.uri);
     }
   };
+  const handleFoodType = text => {
+    handleFoodTypeChange(text);
+  };
 
   return (
     <Container>
@@ -71,7 +76,7 @@ const Upload = props => {
           </Item>
           <Item>
             <FormTextInput
-              value={inputs.description}
+              value={inputs.postText}
               placeholder="description"
               onChangeText={handleUploadDescriptionChange}
               onEndEditing={() => {
@@ -80,6 +85,13 @@ const Upload = props => {
               error={errors.description}
             />
           </Item>
+          {/*  <Item>
+            <FormTextInput
+              value={inputs.foodType}
+              placeholder="foodType"
+              onChangeText={handleFoodType}
+            />
+          </Item> */}
           <Button full style={{ margin: 10 }} onPress={_pickImage}>
             <Text>Select</Text>
           </Button>

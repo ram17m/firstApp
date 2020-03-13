@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { List as BaseList, View, Spinner } from "native-base";
 import ListItem from "./ListItem";
 import { MediaContext } from "../contexts/MediaContext";
-import { getAllMedia, getUserMedia } from "../hooks/APIHooks.js";
+import { getRestaurantByTag, getUserMedia } from "../hooks/APIHooks.js";
 import { NavigationEvents } from "react-navigation";
 import PropTypes from "prop-types";
 import { AsyncStorage } from "react-native";
@@ -15,8 +15,8 @@ const List = props => {
     try {
       let data = [];
       if (mode === "all") {
-        data = await getAllMedia();
-        setMedia(data.reverse());
+        data = await getRestaurantByTag();
+        setMedia(data);
       } else {
         const token = await AsyncStorage.getItem("userToken");
         data = await getUserMedia(token);

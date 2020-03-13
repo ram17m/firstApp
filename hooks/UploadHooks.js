@@ -25,8 +25,16 @@ const constraints = {
   }
 };
 
+const initialInputs = {
+  foodType: "",
+  rating: "",
+  address: "",
+  phoneNo: "",
+  location: ""
+};
+
 const useUploadForm = props => {
-  const [inputs, setInputs] = useState({});
+  const [inputs, setInputs] = useState({ initialInputs });
   const [errors, setErrors] = useState({});
   const { media, setMedia } = useContext(MediaContext);
 
@@ -88,6 +96,14 @@ const useUploadForm = props => {
     }));
   };
 
+  const handleFoodTypeChange = text => {
+    console.log("uploadfoodt", text);
+    setInputs(inputs => ({
+      ...inputs,
+      foodType: text
+    }));
+  };
+
   const handleUpload = async navigation => {
     const localUri = inputs.image;
     // ImagePicker saves the taken photo to disk and returns a local URI to it
@@ -106,10 +122,11 @@ const useUploadForm = props => {
     if (token !== null) {
       // Upload the image using the fetch and FormData APIs
       const formData = new FormData();
+      const descriptionD = { description: inputs.postText };
       // Assume "photo" is the name of the form field the server expects
       formData.append("file", { uri: localUri, name: filename, type });
       formData.append("title", inputs.title);
-      formData.append("description", inputs.description);
+      formData.append("description", JSON.stringify(descriptionD));
 
       const fetchOptions = {
         method: "POST",
@@ -145,6 +162,7 @@ const useUploadForm = props => {
   return {
     handleUploadTitleChange,
     handleUploadDescriptionChange,
+    handleFoodTypeChange,
     handleUploadImageUri,
     handleUpload,
     validateField,
